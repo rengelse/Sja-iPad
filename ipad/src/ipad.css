@@ -57,3 +57,114 @@
   .platform-ipad .section-nav-panel{display:block!important}
   .platform-ipad .section-nav-panel .section-links{display:grid!important}
 }
+
+/* v0.3.0 — dedicated iPad UX */
+.platform-ipad body{touch-action:manipulation}
+.platform-ipad .content{max-width:1366px;margin:0 auto}
+.platform-ipad .editor-view{max-width:1366px;margin:0 auto}
+.platform-ipad button,.platform-ipad select,.platform-ipad input{font-size:16px}
+.platform-ipad textarea{font-size:16px;line-height:1.45}
+.platform-ipad .topbar{gap:12px}
+.platform-ipad .top-nav-btn,.platform-ipad .icon-btn{min-height:48px}
+.platform-ipad .editor-section{border-radius:14px}
+.platform-ipad .task-card,.platform-ipad .participant-row,.platform-ipad .check-row,.platform-ipad .section-row{border-radius:12px}
+.platform-ipad .section-toggle{min-height:52px}
+.platform-ipad .section-head-action button,.platform-ipad .section-head-action{min-height:44px}
+.platform-ipad .risk-factor-controls button{min-height:48px}
+.platform-ipad .participant-row>[data-prm]{min-height:48px;height:48px}
+.platform-ipad .measure-status{min-height:48px}
+
+/* Landscape iPad: retain navigation and use the width efficiently. */
+@media (orientation:landscape) and (min-width:901px) and (max-width:1366px){
+  .platform-ipad .content{padding:14px 18px 24px}
+  .platform-ipad .editor-layout{grid-template-columns:230px minmax(0,1fr);gap:20px}
+  .platform-ipad .section-nav{position:sticky;top:152px;display:grid;max-height:calc(100vh - 172px);overflow:auto;padding-bottom:12px}
+  .platform-ipad .section-nav-panel{display:block!important}
+  .platform-ipad .section-nav-panel .section-links{display:grid!important}
+  .platform-ipad .risk-sidebar{max-height:none;overflow:visible}
+  .platform-ipad .editor-toolbar{top:76px}
+  .platform-ipad .editor-actions{flex-wrap:wrap;justify-content:flex-end}
+  .platform-ipad .editor-actions button{min-width:138px;min-height:48px}
+  .platform-ipad .form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .platform-ipad .participant-row{grid-template-columns:1.25fr 1fr 1fr auto;gap:10px;padding:12px}
+  .platform-ipad .risk-grid{grid-template-columns:1fr 1fr}
+  .platform-ipad .risk-workflow .risk-controls{grid-template-columns:minmax(120px,1fr) auto minmax(120px,1fr) minmax(110px,auto)}
+  .platform-ipad .hazard-table-head,.platform-ipad .hazard-line{grid-template-columns:minmax(0,.9fr) minmax(0,.9fr) minmax(0,1.2fr) 148px 42px}
+}
+
+/* Portrait iPad: app-like single-column editor with drawer navigation. */
+@media (orientation:portrait) and (max-width:900px){
+  .platform-ipad .topbar{padding:calc(8px + var(--ipad-safe-top)) 12px 8px;align-items:center;min-height:64px}
+  .platform-ipad .brand-logo{width:38px;height:38px}
+  .platform-ipad .brand strong{font-size:16px}
+  .platform-ipad .top-actions{margin-left:auto}
+  .platform-ipad .top-nav-group,.platform-ipad .top-utility-group{gap:4px}
+  .platform-ipad .top-nav-btn{padding:8px 10px;min-width:48px}
+  .platform-ipad .top-icon{display:none}
+  .platform-ipad .content{padding:12px 12px 28px}
+  .platform-ipad .page-head h1,.platform-ipad .editor-toolbar h1{font-size:24px}
+  .platform-ipad .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .platform-ipad .stat{padding:12px}
+  .platform-ipad .editor-toolbar{position:sticky;top:64px;margin:0 -2px 12px;padding:8px 2px 10px;z-index:30}
+  .platform-ipad .editor-toolbar-left{display:flex;align-items:center;gap:10px}
+  .platform-ipad .ipad-sections-btn{display:inline-flex;min-height:48px;padding:0 14px;font-weight:800}
+  .platform-ipad .editor-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .platform-ipad .editor-actions button{min-height:50px;padding:10px 8px}
+  .platform-ipad .editor-form{display:grid;gap:12px}
+  .platform-ipad .editor-section{padding:0;overflow:visible}
+  .platform-ipad .main-editor-section .section-head{padding:12px 14px}
+  .platform-ipad .main-editor-section .section-body{padding:14px}
+  .platform-ipad .form-grid.two,.platform-ipad .settings-fields.two{grid-template-columns:1fr 1fr;gap:12px}
+  .platform-ipad .risk-factor-controls{grid-template-columns:1fr 1fr;gap:8px}
+  .platform-ipad .risk-factor-controls select{grid-column:1/-1}
+  .platform-ipad .participant-row{grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+  .platform-ipad .participant-row .participant-name-wrap{grid-column:1/-1}
+  .platform-ipad .participant-row>[data-prm]{grid-column:1/-1;justify-self:end;width:auto}
+  .platform-ipad .task-card{padding:10px}
+  .platform-ipad .task-top{gap:8px}
+  .platform-ipad .task-top .danger{min-height:44px}
+  .platform-ipad .hazard-table{margin:10px 0}
+  .platform-ipad .hazard-table-head{display:none}
+  .platform-ipad .hazard-line{display:grid;grid-template-columns:1fr 48px;gap:7px;padding:10px;border-bottom:1px solid var(--border)}
+  .platform-ipad .hazard-line textarea,.platform-ipad .hazard-line .measure-status{grid-column:1;border:1px solid var(--border);border-radius:9px;margin:0;min-height:72px}
+  .platform-ipad .hazard-line .measure-status{min-height:50px}
+  .platform-ipad .hazard-line .icon-remove{grid-column:2;grid-row:1/5;align-self:start;margin:0;min-width:44px;min-height:44px}
+  .platform-ipad .risk-workflow{margin:10px 0 12px;padding:12px}
+  .platform-ipad .risk-workflow .risk-grid{grid-template-columns:1fr}
+  .platform-ipad .risk-workflow .risk-controls{grid-template-columns:1fr auto 1fr;gap:8px}
+  .platform-ipad .risk-workflow .risk-score{grid-column:1/-1;min-height:46px}
+  .platform-ipad .check-row{grid-template-columns:1fr!important;gap:8px;padding:12px}
+  .platform-ipad .check-row>.icon-remove{justify-self:end;min-width:44px;min-height:44px}
+  .platform-ipad .section-row{padding:10px}
+  .platform-ipad .section-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .platform-ipad .section-actions button{width:100%}
+  .platform-ipad .settings-grid,.platform-ipad .compact-settings{grid-template-columns:1fr}
+  .platform-ipad .settings-card{padding:16px}
+
+  /* Documents become touch-friendly cards instead of a desktop table. */
+  .platform-ipad .table-wrap{overflow:visible;border:0;background:transparent}
+  .platform-ipad .documents-table{display:block;min-width:0;width:100%}
+  .platform-ipad .documents-table thead{display:none}
+  .platform-ipad .documents-table tbody{display:grid;gap:10px}
+  .platform-ipad .documents-table tr{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px;gap:8px 14px;box-shadow:0 2px 7px color-mix(in srgb,var(--text) 5%,transparent)}
+  .platform-ipad .documents-table td{display:grid;gap:2px;padding:0;border:0;min-width:0}
+  .platform-ipad .documents-table td::before{content:attr(data-ipad-label);font-size:10px;line-height:1.2;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:800}
+  .platform-ipad .documents-table td:nth-child(2),.platform-ipad .documents-table td.actions-col,.platform-ipad .documents-table td:last-child{grid-column:1/-1}
+  .platform-ipad .documents-table td:last-child{display:flex;flex-wrap:wrap;gap:8px;padding-top:6px;border-top:1px solid var(--border)}
+  .platform-ipad .documents-table td:last-child::before{display:none}
+  .platform-ipad .documents-table td:last-child button{min-height:46px;flex:1 1 120px}
+  .platform-ipad .template-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+}
+
+/* Narrow portrait / split-screen. */
+@media (max-width:640px){
+  .platform-ipad .top-nav-btn span:not(.top-icon){font-size:13px}
+  .platform-ipad .stats{grid-template-columns:1fr}
+  .platform-ipad .form-grid.two,.platform-ipad .settings-fields.two{grid-template-columns:1fr}
+  .platform-ipad .participant-row{grid-template-columns:1fr}
+  .platform-ipad .participant-row .participant-name-wrap,.platform-ipad .participant-row>[data-prm]{grid-column:auto}
+  .platform-ipad .editor-actions{grid-template-columns:1fr}
+  .platform-ipad .template-grid{grid-template-columns:1fr}
+  .platform-ipad .documents-table tr{grid-template-columns:1fr}
+  .platform-ipad .documents-table td:nth-child(2){grid-column:auto}
+}

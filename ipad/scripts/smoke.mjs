@@ -6,5 +6,7 @@ for(const rel of required)await access(path.join(root,rel));
 const platform=await readFile(path.join(root,'src/js/platform.js'),'utf8');if(!platform.includes('globalThis.sjaPlatform'))throw new Error('Shared platform injection missing');
 const app=await readFile(path.join(root,'src/js/app.js'),'utf8');if(app.includes('window.sjaDesktop'))throw new Error('Renderer contains direct Electron bridge access');
 const pwa=await readFile(path.join(ipad,'src/platform-pwa.js'),'utf8');for(const token of ['indexedDB','buildPdf','navigator.share','crypto.randomUUID'])if(!pwa.includes(token))throw new Error(`PWA platform missing ${token}`);
-const buildSw=await readFile(path.join(ipad,'scripts/build-sw.mjs'),'utf8');if(!buildSw.includes("CACHE='sja-ipad-v0.2.1'"))throw new Error('Service worker cache version mismatch');
+const buildSw=await readFile(path.join(ipad,'scripts/build-sw.mjs'),'utf8');if(!buildSw.includes("CACHE='sja-ipad-v0.3.0'"))throw new Error('Service worker cache version mismatch');
+const css=await readFile(path.join(ipad,'src/ipad.css'),'utf8');for(const token of ['orientation:portrait','orientation:landscape','data-ipad-label'])if(!css.includes(token))throw new Error(`iPad responsive CSS missing ${token}`);
+const main=await readFile(path.join(ipad,'src/main.js'),'utf8');for(const token of ['MutationObserver','enhanceIpadTables','orientationchange'])if(!main.includes(token))throw new Error(`iPad UI bootstrap missing ${token}`);
 console.log('SJA Generator iPad PWA smoke tests: OK');
