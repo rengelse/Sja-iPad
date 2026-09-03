@@ -1,0 +1,59 @@
+:root.platform-ipad{--ipad-safe-top:env(safe-area-inset-top,0px);--ipad-safe-bottom:env(safe-area-inset-bottom,0px)}
+.platform-ipad body{overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;padding-bottom:var(--ipad-safe-bottom)}
+.platform-ipad input,.platform-ipad textarea,.platform-ipad select{-webkit-user-select:text;user-select:text}
+.platform-ipad .topbar{padding-top:var(--ipad-safe-top);height:auto;min-height:68px}
+.platform-ipad button,.platform-ipad input,.platform-ipad select{min-height:44px}
+.platform-ipad textarea{min-height:88px}
+.platform-ipad .ipad-hidden{display:none!important}
+.platform-ipad .ipad-sections-btn{display:none;margin-right:10px;white-space:nowrap}
+.platform-ipad .ipad-drawer-backdrop{display:none;border:0;background:rgba(0,0,0,.42);position:fixed;inset:0;z-index:1190;width:100%;height:100%}
+.platform-ipad .ipad-pdf-preview{position:fixed;inset:0;z-index:3000;background:#202124;display:flex;flex-direction:column;padding-top:var(--ipad-safe-top);padding-bottom:var(--ipad-safe-bottom)}
+.platform-ipad .ipad-pdf-toolbar{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#fff;color:#17212b;border-bottom:1px solid #d8dee4}
+.platform-ipad .ipad-pdf-toolbar button{min-width:44px;border:0;background:transparent;font-size:22px;color:inherit}
+.platform-ipad .ipad-pdf-preview iframe{border:0;flex:1;width:100%;background:#555}
+@media (max-width:1180px){
+  .platform-ipad .shell{padding-left:18px;padding-right:18px}
+  .platform-ipad .editor-layout{grid-template-columns:minmax(220px,260px) minmax(0,1fr);gap:18px}
+  .platform-ipad .form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .platform-ipad .editor-actions{gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .platform-ipad .editor-actions button{min-width:128px}
+}
+@media (max-width:900px){
+  .platform-ipad .topbar{padding-left:14px;padding-right:14px}
+  .platform-ipad .brand small{display:none}
+  .platform-ipad .top-actions{gap:6px}
+  .platform-ipad .top-nav-btn{padding-left:10px;padding-right:10px}
+  .platform-ipad .shell{padding:14px 12px 24px}
+  .platform-ipad .editor-layout{display:block}
+  .platform-ipad .ipad-sections-btn{display:inline-flex;align-items:center}
+  .platform-ipad .section-nav{position:fixed;left:0;top:var(--ipad-safe-top);bottom:0;width:min(82vw,360px);z-index:1200;background:var(--bg,#f4f6f8);padding:72px 14px 18px;overflow-y:auto;transform:translateX(-105%);transition:transform .18s ease;box-shadow:8px 0 24px rgba(0,0,0,.22)}
+  .platform-ipad.ipad-drawer-open .section-nav{transform:translateX(0)}
+  .platform-ipad.ipad-drawer-open .ipad-drawer-backdrop{display:block}
+  .platform-ipad .editor-toolbar{align-items:flex-start;gap:12px;flex-direction:column}
+  .platform-ipad .editor-toolbar-left,.platform-ipad .editor-actions{width:100%}
+  .platform-ipad .editor-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .platform-ipad .editor-actions button{width:100%;min-width:0}
+  .platform-ipad .page-head,.platform-ipad .documents-page-head{align-items:stretch;gap:12px}
+  .platform-ipad .page-head-actions{flex-wrap:wrap;width:100%}
+  .platform-ipad .page-head-actions .search{flex:1 1 100%;width:100%}
+  .platform-ipad .settings-grid,.platform-ipad .compact-settings{grid-template-columns:1fr}
+  .platform-ipad .risk-factor-controls{grid-template-columns:1fr 1fr}
+  .platform-ipad .risk-factor-controls select{grid-column:1/-1}
+}
+@media (max-width:700px){
+  .platform-ipad .top-icon{display:none}
+  .platform-ipad .brand strong{font-size:15px}
+  .platform-ipad .form-grid.two,.platform-ipad .settings-fields.two{grid-template-columns:1fr}
+  .platform-ipad .editor-actions{grid-template-columns:1fr}
+  .platform-ipad .section-head{align-items:flex-start}
+  .platform-ipad .section-head-action{margin-top:6px}
+  .platform-ipad .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .platform-ipad .documents-table{min-width:860px}
+}
+@media (orientation:landscape) and (min-width:901px){
+  .platform-ipad .section-nav{position:sticky;top:18px;align-self:start}
+}
+@media (max-width:900px){
+  .platform-ipad .section-nav-panel{display:block!important}
+  .platform-ipad .section-nav-panel .section-links{display:grid!important}
+}

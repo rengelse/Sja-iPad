@@ -1,0 +1,10 @@
+import { readFile, access } from 'node:fs/promises';
+import path from 'node:path';import { fileURLToPath } from 'node:url';
+const here=path.dirname(fileURLToPath(import.meta.url));const root=path.resolve(here,'..','..');const ipad=path.resolve(here,'..');
+const required=['src/js/app.js','src/js/platform.js','src/shared/pdf.mjs','ipad/src/main.js','ipad/src/platform-pwa.js','ipad/src/ipad.css','ipad/public/manifest.webmanifest','ipad/public/sw.js'];
+for(const rel of required)await access(path.join(root,rel));
+const platform=await readFile(path.join(root,'src/js/platform.js'),'utf8');if(!platform.includes('globalThis.sjaPlatform'))throw new Error('Shared platform injection missing');
+const app=await readFile(path.join(root,'src/js/app.js'),'utf8');if(app.includes('window.sjaDesktop'))throw new Error('Renderer contains direct Electron bridge access');
+const pwa=await readFile(path.join(ipad,'src/platform-pwa.js'),'utf8');for(const token of ['indexedDB','buildPdf','navigator.share','crypto.randomUUID'])if(!pwa.includes(token))throw new Error(`PWA platform missing ${token}`);
+const buildSw=await readFile(path.join(ipad,'scripts/build-sw.mjs'),'utf8');if(!buildSw.includes("CACHE='sja-ipad-v0.2.0'"))throw new Error('Service worker cache version mismatch');
+console.log('SJA Generator iPad PWA smoke tests: OK');

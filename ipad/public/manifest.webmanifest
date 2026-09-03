@@ -1,0 +1,15 @@
+{
+  "name": "SJA Generator",
+  "short_name": "SJA",
+  "description": "Sikker jobb-analyse – offline på iPad",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f6f8",
+  "theme_color": "#ffffff",
+  "icons": [
+    {"src":"./assets/app-icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
