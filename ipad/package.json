@@ -1,6 +1,6 @@
 {
   "name": "sja-generator-ipad-pwa",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Offline-first iPad PWA for SJA Generator using the shared desktop core/UI",
   "type": "module",

@@ -2,7 +2,7 @@ import { buildPdf, PDF_TEXT } from '../../src/shared/pdf.mjs';
 
 const DB_NAME='sja-generator-ipad';
 const DB_VERSION=1;
-const VERSION='0.2.0';
+const VERSION='0.2.1';
 const STORES={documents:'documents',people:'people',templates:'templates'};
 
 function openDb(){
