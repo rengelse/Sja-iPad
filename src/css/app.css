@@ -556,3 +556,40 @@ label input,label select{width:100%}
 .personnel-editor-actions{display:flex;gap:8px;margin-top:2px}
 .personnel-editor-actions button{height:40px;min-width:0;flex:1}
 @media (max-width:1050px){.personnel-panel{grid-column:auto}}
+/* v0.12.3 — document profile spans columns 2–3 beside Personnel */
+.document-profile-panel{grid-column:2 / span 2;align-self:start}
+.document-profile-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:24px;align-items:start}
+.document-profile-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.document-profile-controls>label{margin:0;min-width:0}
+.document-profile-controls>label>span{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:5px}
+.profile-logo-row{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)}
+.profile-logo-preview{width:150px;height:66px;display:grid;place-items:center;border:1px dashed var(--border);border-radius:8px;background:var(--surface);overflow:hidden;color:var(--muted);font-size:12px}
+.profile-logo-preview img{max-width:135px;max-height:54px;object-fit:contain;display:block}
+.profile-logo-actions{display:flex;gap:8px;flex-wrap:wrap}
+.profile-color-field{grid-column:1/-1}
+.profile-color-control{display:flex;gap:8px;align-items:center}
+.profile-color-control input[type="color"]{width:48px;height:42px;padding:3px;cursor:pointer;flex:0 0 auto}
+.profile-color-control input[type="text"]{width:110px;text-transform:uppercase;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.document-profile-controls .settings-actions{grid-column:1/-1;margin-top:2px}
+.profile-sheet-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.profile-sheet-preview{--pdf-profile-color:#1A527D;position:relative;width:250px;aspect-ratio:210/297;background:#fff;border:1px solid #d7dce2;border-radius:4px;box-shadow:0 12px 28px rgba(20,24,32,.14);overflow:hidden;color:#17202a}
+.profile-doc-title{position:absolute;left:17px;top:37px;font-size:15px;font-weight:800;color:color-mix(in srgb,var(--pdf-profile-color) 80%,#000)}
+.profile-accent-line{position:absolute;left:17px;right:17px;top:59px;height:3px;background:var(--pdf-profile-color)}
+.profile-demo-block{position:absolute;left:17px;right:17px;top:78px;height:27px;background:color-mix(in srgb,var(--pdf-profile-color) 14%,#fff);border-left:7px solid var(--pdf-profile-color);border-radius:2px}
+.profile-demo-row{position:absolute;left:17px;right:17px;top:119px;height:12px;background:color-mix(in srgb,var(--pdf-profile-color) 10%,#fff);border:1px solid #dce1e6}
+.profile-demo-row.short{top:139px;right:70px}
+.profile-slot{position:absolute;min-width:82px;max-width:105px;min-height:18px;display:flex;flex-direction:column;gap:2px;font-size:7px;color:color-mix(in srgb,var(--pdf-profile-color) 78%,#000);overflow:hidden}
+.profile-slot-top-left{left:17px;top:10px;align-items:flex-start}
+.profile-slot-top-right{right:17px;top:10px;align-items:flex-end;text-align:right}
+.profile-slot-bottom-left{left:17px;bottom:9px;align-items:flex-start;justify-content:flex-end}
+.profile-slot-bottom-right{right:17px;bottom:9px;align-items:flex-end;justify-content:flex-end;text-align:right}
+.profile-preview-logo img{display:block;max-width:60px;max-height:18px;object-fit:contain}
+.profile-preview-slogan{max-width:100px;line-height:1.15;overflow:hidden;text-overflow:ellipsis}
+.profile-page-number{position:absolute;left:0;right:0;bottom:9px;text-align:center;font-size:6px;color:#8b929a}
+.profile-preview-caption{font-size:11px}
+@media (max-width:1050px){.document-profile-layout{grid-template-columns:minmax(0,1.15fr) minmax(220px,.85fr);gap:18px}.profile-sheet-preview{width:220px}}
+@media (max-width:760px){.document-profile-layout{grid-template-columns:1fr}.profile-sheet-wrap{align-items:flex-start}.profile-sheet-preview{width:220px}.document-profile-controls{grid-template-columns:1fr}.profile-logo-row,.profile-color-field,.document-profile-controls .settings-actions{grid-column:auto}.profile-logo-row{align-items:flex-start;flex-direction:column}.profile-logo-preview{width:100%}}
+
+/* v0.12.3 — settings card placement overrides (must follow profile base rules) */
+@media (max-width:1180px) and (min-width:761px){.document-profile-panel{grid-column:1/-1}}
+@media (max-width:760px){.document-profile-panel{grid-column:auto}}

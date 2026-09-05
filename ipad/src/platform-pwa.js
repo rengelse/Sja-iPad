@@ -1,9 +1,9 @@
 import { buildPdf, PDF_TEXT } from '../../src/shared/pdf.mjs';
 
 const DB_NAME='sja-generator-ipad';
-const DB_VERSION=1;
-const VERSION='0.2.1';
-const STORES={documents:'documents',people:'people',templates:'templates'};
+const DB_VERSION=2;
+const VERSION='0.3.1';
+const STORES={documents:'documents',people:'people',templates:'templates',settings:'settings'};
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -13,6 +13,7 @@ function openDb(){
       if(!db.objectStoreNames.contains(STORES.documents))db.createObjectStore(STORES.documents,{keyPath:'id'});
       if(!db.objectStoreNames.contains(STORES.people))db.createObjectStore(STORES.people,{keyPath:'key'});
       if(!db.objectStoreNames.contains(STORES.templates))db.createObjectStore(STORES.templates,{keyPath:'id'});
+      if(!db.objectStoreNames.contains(STORES.settings))db.createObjectStore(STORES.settings,{keyPath:'key'});
     };
     req.onsuccess=()=>resolve(req.result);
     req.onerror=()=>reject(req.error||new Error('Kunne ikke åpne lokal lagring'));
@@ -55,6 +56,24 @@ async function writePeople(items){
   }finally{db.close();}
   return readPeople();
 }
+
+const DEFAULT_PROFILE={logoDataUrl:'',logoPosition:'bottom-right',slogan:'',sloganPosition:'top-left',accentColor:'#1A527D'};
+const PROFILE_POSITIONS=new Set(['none','top-left','top-right','bottom-left','bottom-right']);
+function normalizeProfile(input={}){
+  const accent=/^#[0-9a-f]{6}$/i.test(String(input.accentColor||''))?String(input.accentColor).toUpperCase():DEFAULT_PROFILE.accentColor;
+  return {logoDataUrl:String(input.logoDataUrl||''),logoPosition:PROFILE_POSITIONS.has(input.logoPosition)?input.logoPosition:DEFAULT_PROFILE.logoPosition,slogan:String(input.slogan||'').trim().slice(0,180),sloganPosition:PROFILE_POSITIONS.has(input.sloganPosition)?input.sloganPosition:DEFAULT_PROFILE.sloganPosition,accentColor:accent};
+}
+async function getProfile(){const row=await get(STORES.settings,'document-profile');return normalizeProfile(row?.value||DEFAULT_PROFILE);}
+async function saveProfile(input){const old=await getProfile();const value=normalizeProfile({...old,...input,logoDataUrl:old.logoDataUrl||input?.logoDataUrl||''});await put(STORES.settings,{key:'document-profile',value});return value;}
+async function chooseProfileLogo(){
+  return new Promise(resolve=>{
+    const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';
+    input.onchange=async()=>{const file=input.files?.[0];if(!file){resolve({ok:false});return;}const reader=new FileReader();reader.onload=async()=>{const old=await getProfile();const value=normalizeProfile({...old,logoDataUrl:String(reader.result||'')});await put(STORES.settings,{key:'document-profile',value});resolve({ok:true,profile:value});};reader.onerror=()=>resolve({ok:false});reader.readAsDataURL(file);};
+    input.click();
+  });
+}
+async function removeProfileLogo(){const old=await getProfile();const value=normalizeProfile({...old,logoDataUrl:''});await put(STORES.settings,{key:'document-profile',value});return value;}
+
 function pdfName(data){return `SJA-${String(data.sjaNo||data.workDescription||data.processTask||'document').replace(/[^a-z0-9-_]+/gi,'-')}.pdf`;}
 let previewUrl='';
 function showPdfPreview(bytes,title){
@@ -65,7 +84,7 @@ function showPdfPreview(bytes,title){
   document.body.appendChild(modal);return {ok:true};
 }
 async function exportPdf(data){
-  const bytes=await buildPdf(data);const name=pdfName(data);const file=new File([bytes],name,{type:'application/pdf'});
+  const bytes=await buildPdf(data,await getProfile());const name=pdfName(data);const file=new File([bytes],name,{type:'application/pdf'});
   if(navigator.share&&navigator.canShare?.({files:[file]})){
     await navigator.share({title:name,files:[file]});return {ok:true,filePath:''};
   }
@@ -96,7 +115,8 @@ export function createPwaPlatform(){
       save:async data=>{if(!data?.id)throw new Error('Template id is required');const clean={...data,updatedAt:new Date().toISOString()};await put(STORES.templates,clean);return clean;},
       delete:id=>del(STORES.templates,id)
     }),
-    pdf:Object.freeze({preview:async data=>showPdfPreview(await buildPdf(data),PDF_TEXT[data?.documentLanguage==='en'?'en':'no'].previewTitle),export:exportPdf}),
+    profile:Object.freeze({get:getProfile,save:saveProfile,chooseLogo:chooseProfileLogo,removeLogo:removeProfileLogo}),
+    pdf:Object.freeze({preview:async data=>showPdfPreview(await buildPdf(data,await getProfile()),PDF_TEXT[data?.documentLanguage==='en'?'en':'no'].previewTitle),export:exportPdf}),
     updates:Object.freeze({
       info:async()=>({configured:true,checked:true,currentVersion:VERSION,latestVersion:VERSION,available:false}),
       check:async()=>({configured:true,checked:true,currentVersion:VERSION,latestVersion:VERSION,available:false}),

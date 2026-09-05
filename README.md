@@ -2,7 +2,7 @@
 
 Offline-first iPad-versjon av SJA Generator distribuert som PWA via GitHub Pages.
 
-## v0.3.0
+## v0.3.1
 
 Første dedikerte iPad-UI-release:
 

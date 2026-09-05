@@ -13,6 +13,7 @@ const desktopPlatform = bridge ? Object.freeze({
   documents: bridge.documents,
   people: bridge.people,
   templates: bridge.templates,
+  profile: bridge.profile,
   pdf: bridge.pdf,
   updates: bridge.updates,
   files: Object.freeze({ show: (filePath) => bridge.showFile(filePath) }),

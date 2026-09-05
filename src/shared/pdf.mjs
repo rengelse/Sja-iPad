@@ -1,5 +1,9 @@
 import { PDFDocument, StandardFonts, rgb, drawCheckBox } from 'pdf-lib';
 
+function hexRgb01(hex){const v=String(hex||'').replace('#','');return [0,2,4].map(i=>parseInt(v.slice(i,i+2),16)/255);}
+function mixColor(a,b,t){return [a[0]*(1-t)+b[0]*t,a[1]*(1-t)+b[1]*t,a[2]*(1-t)+b[2]*t];}
+function dataUrlBytes(dataUrl){const m=String(dataUrl||'').match(/^data:[^;]+;base64,(.+)$/);if(!m)return null;const raw=atob(m[1]);const out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out;}
+
 function wrapText(text, font, size, maxWidth) {
   const words = String(text || '').replace(/\r/g, '').split(/\s+/).filter(Boolean);
   if (!words.length) return [''];
@@ -76,24 +80,29 @@ export const PDF_TEXT = {
   }
 };
 
-export async function buildPdf(data) {
+export async function buildPdf(data, profileInput={}) {
   const lang = data?.documentLanguage === 'en' ? 'en' : 'no';
   const T = PDF_TEXT[lang];
   const pdf = await PDFDocument.create();
   const form = pdf.getForm();
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const profile={logoDataUrl:'',logoPosition:'bottom-right',slogan:'',sloganPosition:'top-left',accentColor:'#1A527D',...(profileInput||{})};
+  let logoImage=null;
+  const logoBytes=dataUrlBytes(profile.logoDataUrl);
+  if(logoBytes){try{logoImage=await pdf.embedPng(logoBytes);}catch(e){console.warn('Could not embed company logo:',e?.message||e);}}
 
   const PAGE = [595.28, 841.89]; // A4 portrait
   const M = 34;
   const CONTENT_W = PAGE[0] - M * 2;
   const TOP = PAGE[1] - 34;
-  const BOTTOM = 34;
+  const BOTTOM = 54;
   const line = rgb(.34,.40,.44);
-  const accent = rgb(.10,.32,.49);
-  const accentDark = rgb(.07,.24,.38);
-  const light = rgb(.90,.95,.98);
-  const lighter = rgb(.965,.98,.99);
+  const baseAccent=hexRgb01(profile.accentColor);
+  const accent = rgb(...baseAccent);
+  const accentDark = rgb(...mixColor(baseAccent,[0,0,0],.24));
+  const light = rgb(...mixColor(baseAccent,[1,1,1],.86));
+  const lighter = rgb(...mixColor(baseAccent,[1,1,1],.94));
   const black = rgb(.07,.09,.10);
   const green = rgb(.13,.48,.21);
   const amber = rgb(.78,.43,.03);
@@ -118,17 +127,37 @@ export async function buildPdf(data) {
   };
   const riskColor = (risk) => ({veryLow:green,low:green,medium:amber,high:red,veryHigh:red}[riskLevel(risk)] || black);
 
+  function drawBranding(position,width,height){
+    if(position==='none')return;
+    const isRight=position.endsWith('right'),isTop=position.startsWith('top');
+    const hasLogo=!!logoImage&&profile.logoPosition===position;
+    const hasSlogan=!!profile.slogan&&profile.sloganPosition===position;
+    if(hasLogo){
+      const dims=logoImage.scale(1),maxW=72,maxH=22,scale=Math.min(maxW/dims.width,maxH/dims.height,1);
+      const w=dims.width*scale,h=dims.height*scale,x=isRight?width-M-w:M,yy=isTop?height-32:8;
+      page.drawImage(logoImage,{x,y:yy,width:w,height:h});
+    }
+    if(hasSlogan){
+      const size=8.2,maxW=175,text=String(profile.slogan||'');
+      const measured=Math.min(maxW,regular.widthOfTextAtSize(text,size));
+      const x=isRight?width-M-measured:M,yy=isTop?(hasLogo?height-49:height-32):(hasLogo?43:18);
+      drawWrapped(page,text,{x,y:yy,width:maxW,font:regular,size,lineHeight:9,maxLines:hasLogo?1:2,color:accentDark});
+    }
+  }
+
   function newPage() {
     page = pdf.addPage(PAGE);
     pageNo += 1;
     const { width, height } = page.getSize();
-    page.drawText(T.docTitle, {x:M,y:height-49,size:19,font:bold,color:accentDark});
+    ['top-left','top-right','bottom-left','bottom-right'].forEach(pos=>drawBranding(pos,width,height));
+    page.drawText(T.docTitle, {x:M,y:height-68,size:19,font:bold,color:accentDark});
     const no = String(data.sjaNo || '');
     const noLabel = `${T.sjaNo}:  ${no}`;
-    page.drawText(noLabel,{x:width-M-bold.widthOfTextAtSize(noLabel,9),y:height-45,size:9,font:bold,color:black});
-    page.drawLine({start:{x:M,y:height-58},end:{x:width-M,y:height-58},thickness:2,color:accent});
-    page.drawText(`${T.page} ${pageNo}`,{x:width-M-38,y:19,size:7,font:regular,color:rgb(.42,.42,.42)});
-    y = height - 78;
+    page.drawText(noLabel,{x:width-M-bold.widthOfTextAtSize(noLabel,9),y:height-64,size:9,font:bold,color:black});
+    page.drawLine({start:{x:M,y:height-77},end:{x:width-M,y:height-77},thickness:2,color:accent});
+    const pageText=`${T.page} ${pageNo}`;
+    page.drawText(pageText,{x:(width-regular.widthOfTextAtSize(pageText,7))/2,y:18,size:7,font:regular,color:rgb(.42,.42,.42)});
+    y = height - 96;
   }
 
   function ensureSpace(required, repeatHeading=null) {
