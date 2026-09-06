@@ -6,7 +6,7 @@ for(const rel of required)await access(path.join(root,rel));
 const platform=await readFile(path.join(root,'src/js/platform.js'),'utf8');if(!platform.includes('globalThis.sjaPlatform'))throw new Error('Shared platform injection missing');
 const app=await readFile(path.join(root,'src/js/app.js'),'utf8');if(app.includes('window.sjaDesktop'))throw new Error('Renderer contains direct Electron bridge access');
 const pwa=await readFile(path.join(ipad,'src/platform-pwa.js'),'utf8');for(const token of ['indexedDB','buildPdf','navigator.share','crypto.randomUUID','getProfile','chooseProfileLogo'])if(!pwa.includes(token))throw new Error(`PWA platform missing ${token}`);
-const buildSw=await readFile(path.join(ipad,'scripts/build-sw.mjs'),'utf8');if(!buildSw.includes("CACHE='sja-ipad-v0.3.1'"))throw new Error('Service worker cache version mismatch');
+const buildSw=await readFile(path.join(ipad,'scripts/build-sw.mjs'),'utf8');if(!buildSw.includes("CACHE='sja-ipad-v0.3.2'"))throw new Error('Service worker cache version mismatch');
 const css=await readFile(path.join(ipad,'src/ipad.css'),'utf8');for(const token of ['orientation:portrait','orientation:landscape','data-ipad-label'])if(!css.includes(token))throw new Error(`iPad responsive CSS missing ${token}`);
 const html=await readFile(path.join(ipad,'index.html'),'utf8');for(const token of ['document-profile-panel','chooseProfileLogo','profileSheetPreview'])if(!html.includes(token))throw new Error(`iPad HTML missing ${token}`);
 const pdf=await readFile(path.join(root,'src/shared/pdf.mjs'),'utf8');for(const token of ['profileInput','drawBranding','accentColor'])if(!pdf.includes(token))throw new Error(`Shared PDF profile support missing ${token}`);

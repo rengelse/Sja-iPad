@@ -2,7 +2,7 @@ import { buildPdf, PDF_TEXT } from '../../src/shared/pdf.mjs';
 
 const DB_NAME='sja-generator-ipad';
 const DB_VERSION=2;
-const VERSION='0.3.1';
+const VERSION='0.3.2';
 const STORES={documents:'documents',people:'people',templates:'templates',settings:'settings'};
 
 function openDb(){
@@ -63,12 +63,52 @@ function normalizeProfile(input={}){
   const accent=/^#[0-9a-f]{6}$/i.test(String(input.accentColor||''))?String(input.accentColor).toUpperCase():DEFAULT_PROFILE.accentColor;
   return {logoDataUrl:String(input.logoDataUrl||''),logoPosition:PROFILE_POSITIONS.has(input.logoPosition)?input.logoPosition:DEFAULT_PROFILE.logoPosition,slogan:String(input.slogan||'').trim().slice(0,180),sloganPosition:PROFILE_POSITIONS.has(input.sloganPosition)?input.sloganPosition:DEFAULT_PROFILE.sloganPosition,accentColor:accent};
 }
-async function getProfile(){const row=await get(STORES.settings,'document-profile');return normalizeProfile(row?.value||DEFAULT_PROFILE);}
+async function imageSourceToPngDataUrl(source,size=0){
+  if(!source)throw new Error('Ingen logo valgt.');
+  if(size>10*1024*1024)throw new Error('Logoen er for stor. Maksimal filstørrelse er 10 MB.');
+  const image=await new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('Logoen kunne ikke leses. Bruk PNG, JPG eller WebP.'));
+    img.src=source;
+  });
+  const maxW=1600,maxH=800;
+  const scale=Math.min(maxW/image.naturalWidth,maxH/image.naturalHeight,1);
+  const width=Math.max(1,Math.round(image.naturalWidth*scale));
+  const height=Math.max(1,Math.round(image.naturalHeight*scale));
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Kunne ikke behandle logoen.');
+  ctx.drawImage(image,0,0,width,height);
+  return canvas.toDataURL('image/png');
+}
+async function getProfile(){
+  const row=await get(STORES.settings,'document-profile');
+  let value=normalizeProfile(row?.value||DEFAULT_PROFILE);
+  if(value.logoDataUrl&&!value.logoDataUrl.startsWith('data:image/png')){
+    try{
+      value=normalizeProfile({...value,logoDataUrl:await imageSourceToPngDataUrl(value.logoDataUrl)});
+      await put(STORES.settings,{key:'document-profile',value});
+    }catch(error){console.warn('Kunne ikke migrere eksisterende logo til PNG:',error);}
+  }
+  return value;
+}
 async function saveProfile(input){const old=await getProfile();const value=normalizeProfile({...old,...input,logoDataUrl:old.logoDataUrl||input?.logoDataUrl||''});await put(STORES.settings,{key:'document-profile',value});return value;}
+async function imageFileToPngDataUrl(file){
+  if(!file)throw new Error('Ingen logo valgt.');
+  const sourceUrl=URL.createObjectURL(file);
+  try{return await imageSourceToPngDataUrl(sourceUrl,file.size);}finally{URL.revokeObjectURL(sourceUrl);}
+}
 async function chooseProfileLogo(){
   return new Promise(resolve=>{
     const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';
-    input.onchange=async()=>{const file=input.files?.[0];if(!file){resolve({ok:false});return;}const reader=new FileReader();reader.onload=async()=>{const old=await getProfile();const value=normalizeProfile({...old,logoDataUrl:String(reader.result||'')});await put(STORES.settings,{key:'document-profile',value});resolve({ok:true,profile:value});};reader.onerror=()=>resolve({ok:false});reader.readAsDataURL(file);};
+    input.onchange=async()=>{
+      const file=input.files?.[0];if(!file){resolve({ok:false});return;}
+      try{
+        const logoDataUrl=await imageFileToPngDataUrl(file);
+        const old=await getProfile();const value=normalizeProfile({...old,logoDataUrl});
+        await put(STORES.settings,{key:'document-profile',value});resolve({ok:true,profile:value});
+      }catch(error){resolve({ok:false,error:String(error?.message||error)});}
+    };
     input.click();
   });
 }

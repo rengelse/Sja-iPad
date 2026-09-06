@@ -375,7 +375,7 @@ function renderDocumentProfilePreview(){
   if(pending.slogan)add(pending.sloganPosition,esc(pending.slogan),'slogan');
 }
 async function saveDocumentProfileSettings(){try{documentProfile=await platform.profile.save(profileInputValue());renderDocumentProfileSettings();toast(t(lang,'documentProfileSaved'),'success');}catch(e){console.error(e);toast(t(lang,'profileSaveFailed'),'error');}}
-async function chooseDocumentProfileLogo(){try{const r=await platform.profile.chooseLogo();if(!r?.ok)return;documentProfile=r.profile;renderDocumentProfileSettings();toast(t(lang,'logoUpdated'),'success');}catch(e){console.error(e);toast(e.message||t(lang,'profileSaveFailed'),'error');}}
+async function chooseDocumentProfileLogo(){try{const r=await platform.profile.chooseLogo();if(!r?.ok){if(r?.error)toast(r.error,'error');return;}documentProfile=r.profile;renderDocumentProfileSettings();toast(t(lang,'logoUpdated'),'success');}catch(e){console.error(e);toast(e.message||t(lang,'profileSaveFailed'),'error');}}
 async function removeDocumentProfileLogo(){try{documentProfile=await platform.profile.removeLogo();renderDocumentProfileSettings();toast(t(lang,'logoRemoved'),'success');}catch(e){console.error(e);toast(t(lang,'profileSaveFailed'),'error');}}
 async function resetDocumentProfileSettings(){try{documentProfile=await platform.profile.save({...DEFAULT_PROFILE});if(documentProfile?.logoDataUrl){documentProfile=await platform.profile.removeLogo();}renderDocumentProfileSettings();toast(t(lang,'documentProfileReset'),'success');}catch(e){console.error(e);toast(t(lang,'profileSaveFailed'),'error');}}
 
